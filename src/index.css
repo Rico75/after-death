@@ -6,8 +6,34 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+a {
+  text-decoration: none;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.main-image {
+  height: 70vh;
+  width:  100vw;
+  overflow: hidden;
+}
+
+.main-text {
+  margin: auto;
+  text-align: center;
+  font-size: 30px;
+}
+
+.list {
+  width: 30%;
+  text-align: left;
+  margin: auto;
+}
+
+.sign-up-form {
+  margin: auto;
+  width: 25%;
 }
