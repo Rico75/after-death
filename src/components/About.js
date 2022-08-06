@@ -1,10 +1,9 @@
 import React from 'react';
-import logo from "../images/death.png";
 const About = () => {
 
 	return (
 		<>
-			<p className="main-text">
+			<div className="main-text">
 				When someone dies, these are some issue to resolve:<br /><br />
 				<ol className="list">
 					<li>Asset information</li>
@@ -15,7 +14,7 @@ const About = () => {
 					<li>Tax Returns</li>
 					<li>Death Certificates</li>
 				</ol>
-			</p>
+			</div>
 		</>
 	)
 };

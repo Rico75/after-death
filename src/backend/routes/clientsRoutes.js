@@ -3,7 +3,8 @@ import {
 	getClients,
 	getClientWithID,
 	UpdateClient,
-	deleteClient
+	deleteClient,
+	loginClient
 } from '../controllers/clientsController';
 
 const routes = (app) => {
@@ -27,6 +28,10 @@ const routes = (app) => {
 	app.route('/addClient')
 		// POST endpoint
 		.post(addNewClient);
+
+	app.route('/loginClient')
+		// POST endpoint
+		.post(loginClient);
 }
 
 export default routes;
