@@ -34,6 +34,7 @@ code {
 }
 
 .sign-up-form {
-  margin: auto;
+  margin: auto !important;;
   width: 25%;
 }
+

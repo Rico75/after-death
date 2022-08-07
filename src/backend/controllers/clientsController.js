@@ -4,6 +4,7 @@ import config from '../../config';
 
 const Client = mongoose.model('Clients', ClientSchema);
 const { MongoClient } = require("mongodb");
+const mongoObjectId = require("mongodb").ObjectId;
 const cl = new MongoClient( config.mongodbUri );
 
 
@@ -24,7 +25,7 @@ export const addNewClient = (req, res) => {
 			return 0;
 		}
 		finally {
-			await client.close();
+			// await client.close();
 		}
 	}
 	run().catch(console.dir);
@@ -49,12 +50,35 @@ export const getClients = (req, res) => {
 };
 
 export const getClientWithID = (req, res) => {
-	Client.findById(req.params.ClientId,(err, Client) => {
-		if (err) {
-			res.send(err);
+	let cid = req.params.cid.toString();
+	let ocid = new mongoObjectId(cid);
+
+	async function run() {
+		try {
+			await cl.connect();
+			const db = cl.db('after-death');
+			const col = db.collection('clients');
+
+			col.findOne({_id : ocid}).then(function(user, error) {
+				if (error) {
+					res.send({error: true});
+				} else if (!user) {
+					res.send({error: true});
+				} else {
+					res.send({success: true,user: user});
+				}
+			});
+			return 1;
+
+		} catch (err) {
+			console.log(err.stack);
+			return 0;
 		}
-		res.json(Client);
-	});
+		finally {
+			// await client.close();
+		}
+	}
+	run().catch(console.dir);
 };
 
 export const UpdateClient = (req, res) => {
@@ -97,7 +121,9 @@ export const loginClient = (req, res) => {
 						} else if (!isMatch) {
 							res.send({error: true});
 						} else {
-							res.send({success: true});
+							// res.send({success: true});
+							let clientID = user._id.toString();
+							res.send({success: true,id: clientID});
 						}
 					})
 				}

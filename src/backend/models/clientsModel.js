@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 const Schema = mongoose.Schema;
 
 export const ClientSchema = new Schema({
+	_id: Schema.Types.ObjectId,
 	loginName: {
 		type: String,
 		required: true,
@@ -32,6 +33,34 @@ export const ClientSchema = new Schema({
 		type: Number,
 		trim: true
 	},
+	hAddress1: {
+		type: String,
+		trim: true
+	},
+	hAddress2: {
+		type: String,
+		trim: true
+	},
+	mailAddress1: {
+		type: String,
+		trim: true
+	},
+	mailAddress2: {
+		type: String,
+		trim: true
+	},
+	mailCity: {
+		type: String,
+		trim: true
+	},
+	mailState: {
+		type: String,
+		trim: true
+	},
+	mailZip: {
+		type: String,
+		trim: true
+	},
 	createDate: {
 		type: Date,
 		default: Date.now
@@ -40,7 +69,6 @@ export const ClientSchema = new Schema({
 
 ClientSchema.pre("save",function(next) {
 	const user = this
-
 	if (this.isModified("loginPass") || this.isNew) {
 		bcrypt.genSalt(10, function (saltError, salt) {
 			if (saltError) {

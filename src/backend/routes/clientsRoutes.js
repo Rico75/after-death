@@ -15,8 +15,8 @@ const routes = (app) => {
 		// POST endpoint
 		.post(addNewClient);
 
-	app.route('/client/:ClientId')
-		// Get specific Email
+	app.route('/client/:cid')
+		// Get specific id
 		.get(getClientWithID)
 
 		// update a specific Email
