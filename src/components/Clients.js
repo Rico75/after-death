@@ -166,32 +166,22 @@ class ClientData extends React.Component {
 
 		console.log('save')
 
-		// axios.post('http://localhost:4000/saveClient', {
-		// 		loginName: this.state.loginName,
-		// 		loginPass: this.state.loginPass,
-		// 		firstName: this.state.firstName,
-		// 		lastName: this.state.lastName,
-		// 		emailAddress: this.state.emailAddress,
-		// 		phone: this.state.phone,
-		// 		hAddress1: this.state.hAddress1,
-		// 		hAddress2: this.state.hAddress2,
-		// 		mailAddress1: this.state.mailAddress1,
-		// 		mailAddress2: this.state.mailAddress2,
-		// 		mailCity: this.state.mailCity,
-		// 		mailState: this.state.mailState,
-		// 		mailZip: this.state.mailZip
-		// 	})
-		// 	.then((response) => {
-		// 		console.log('response:',response);
-		// 		if(response.status === 200)
-		// 		{
-		// 			console.log('hide');
-		// 			this.toggleThankYou1();
-		// 		}
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log('error:',error);
-		// 	});
+		axios.put('http://localhost:4000/client/' + this.state.clientId.toString(), {
+					firstName: this.state.firstName,
+					lastName: this.state.lastName,
+					emailAddress: this.state.emailAddress,
+					phone: this.state.phone
+			})
+			.then((response) => {
+				console.log('response:',response);
+				if(response.status === 200)
+				{
+					this.toggleForm('form2')
+				}
+			})
+			.catch((error) => {
+				console.log('error:',error);
+			});
 
 	}
 

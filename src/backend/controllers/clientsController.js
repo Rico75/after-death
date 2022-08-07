@@ -82,12 +82,30 @@ export const getClientWithID = (req, res) => {
 };
 
 export const UpdateClient = (req, res) => {
-	Client.findOneAndUpdate({ _id: req.params.ClientId}, req.body, {new: true}, (err, Client) => {
-		if (err) {
-			res.send(err);
+	let cid = req.params.cid.toString();
+	let ocid = new mongoObjectId(cid);
+
+	let updClient = new Client(req.body);
+	async function run() {
+		try {
+			await cl.connect();
+			const db = cl.db('after-death');
+			const col = db.collection('clients');
+console.log('updClient',updClient);
+			col.updateOne({_id : ocid},{$set: updClient});
+			res.send({success: true});
+			// return 1;
+
+		} catch (err) {
+			console.log(err.stack);
+			res.send({error: true});
+			// return 0;
 		}
-		res.json(Client);
-	});
+		finally {
+			// await client.close();
+		}
+	}
+	run().catch(console.dir);
 };
 
 export const deleteClient = (req, res) => {
