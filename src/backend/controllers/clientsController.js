@@ -40,7 +40,6 @@ export const addNewClient = (req, res) => {
 };
 
 export const getClients = (req, res) => {
-	console.log('getClients');
 	Client.find({},(err, Client) => {
 		if (err) {
 			res.send(err);
@@ -91,15 +90,13 @@ export const UpdateClient = (req, res) => {
 			await cl.connect();
 			const db = cl.db('after-death');
 			const col = db.collection('clients');
-console.log('updClient',updClient);
+
 			col.updateOne({_id : ocid},{$set: updClient});
 			res.send({success: true});
-			// return 1;
 
 		} catch (err) {
 			console.log(err.stack);
 			res.send({error: true});
-			// return 0;
 		}
 		finally {
 			// await client.close();

@@ -26,8 +26,11 @@ class ClientData extends React.Component {
 			loginName: '',
 			loginPass: '',
 			saltRounds: 15,
-			hAddress1: '',
-			hAddress2: '',
+			homeAddress1: '',
+			homeAddress2: '',
+			homeCity: '',
+			homeState: '',
+			homeZip: '',
 			mailAddress1: '',
 			mailAddress2: '',
 			mailCity: '',
@@ -50,17 +53,20 @@ class ClientData extends React.Component {
 					console.log('res:',res);
 					if(res.status === 200)
 					{
-						this.setState({ emailAddress	: res.data.user.emailAddress });
 						this.setState({ firstName		: res.data.user.firstName	 });
-						this.setState({ lastName		: res.data.user.lastName	 });
-						this.setState({ hAddress1		: res.data.user.hAddress1	 });
-						this.setState({ hAddress2		: res.data.user.hAddress2	 });
-						this.setState({ mailAddress1	: res.data.user.mailAddress1 });
-						this.setState({ mailAddress2	: res.data.user.mailAddress2 });
-						this.setState({ mailCity		: res.data.user.mailCity	 });
-						this.setState({ mailState		: res.data.user.mailState	 });
-						this.setState({ mailZip		: res.data.user.mailZip		 });
+						this.setState({ lastName			: res.data.user.lastName	 });
+						this.setState({ emailAddress		: res.data.user.emailAddress });
 						this.setState({ phone			: res.data.user.phone		 });
+						this.setState({ homeAddress1		: res.data.user.homeAddress1 });
+						this.setState({ homeAddress2		: res.data.user.homeAddress2 });
+						this.setState({ homeCity			: res.data.user.homeCity	 });
+						this.setState({ homeState		: res.data.user.homeState	 });
+						this.setState({ homeZip			: res.data.user.homeZip		 });
+						this.setState({ mailAddress1		: res.data.user.mailAddress1 });
+						this.setState({ mailAddress2		: res.data.user.mailAddress2 });
+						this.setState({ mailCity			: res.data.user.mailCity	 });
+						this.setState({ mailState		: res.data.user.mailState	 });
+						this.setState({ mailZip			: res.data.user.mailZip		 });
 
 						this.toggleForm('form1')
 					}
@@ -83,7 +89,7 @@ class ClientData extends React.Component {
 				this.setState({ showForm2: true });
 				this.setState({ showForm3: false });
 			break;
-			case 'form2':
+			case 'form3':
 				this.setState({ showForm1: false });
 				this.setState({ showForm2: false });
 				this.setState({ showForm3: true });
@@ -122,6 +128,36 @@ class ClientData extends React.Component {
 			case 'phone':
 				this.setState({ phone: event.target.value });
 				break;
+			case 'homeAddress1':
+				this.setState({ homeAddress1: event.target.value });
+				break;
+			case 'homeAddress2':
+				this.setState({ homeAddress2: event.target.value });
+				break;
+			case 'homeCity':
+				this.setState({ homeCity: event.target.value });
+				break;
+			case 'homeState':
+				this.setState({ homeState: event.target.value });
+				break;
+			case 'homeZip':
+				this.setState({ homeZip: event.target.value });
+				break;
+			case 'mailAddress1':
+				this.setState({ mailAddress1: event.target.value });
+				break;
+			case 'mailAddress2':
+				this.setState({ mailAddress2: event.target.value });
+				break;
+			case 'mailCity':
+				this.setState({ mailCity: event.target.value });
+				break;
+			case 'mailState':
+				this.setState({ mailState: event.target.value });
+				break;
+			case 'mailZip':
+				this.setState({ mailZip: event.target.value });
+				break;
 			default:
 				console.log(`Sorry, we are out of` + event.target.value + `.`);
 		}
@@ -132,22 +168,24 @@ class ClientData extends React.Component {
 		event.preventDefault();
 
 		axios.post('http://localhost:4000/addClient', {
-				loginName: this.state.loginName,
-				loginPass: this.state.loginPass,
-				firstName: this.state.firstName,
-				lastName: this.state.lastName,
-				emailAddress: this.state.emailAddress,
-				phone: this.state.phone,
-				hAddress1: this.state.hAddress1,
-				hAddress2: this.state.hAddress2,
-				mailAddress1: this.state.mailAddress1,
-				mailAddress2: this.state.mailAddress2,
-				mailCity: this.state.mailCity,
-				mailState: this.state.mailState,
-				mailZip: this.state.mailZip
+				loginName:		this.state.loginName,
+				loginPass:		this.state.loginPass,
+				firstName:		this.state.firstName,
+				lastName:		this.state.lastName,
+				emailAddress:	this.state.emailAddress,
+				phone:			this.state.phone,
+				homeAddress1:	this.state.homeAddress1,
+				homeAddress2:	this.state.homeAddress2,
+				homeCity:		this.state.homeCity,
+				homeState:		this.state.homeState,
+				homeZip:		this.state.homeZip,
+				mailAddress1:	this.state.mailAddress1,
+				mailAddress2:	this.state.mailAddress2,
+				mailCity:		this.state.mailCity,
+				mailState:		this.state.mailState,
+				mailZip:		this.state.mailZip
 			})
 			.then((response) => {
-				console.log('response:',response);
 				if(response.status === 200)
 				{
 					console.log('hide');
@@ -164,19 +202,38 @@ class ClientData extends React.Component {
 
 		event.preventDefault();
 
-		console.log('save')
-
 		axios.put('http://localhost:4000/client/' + this.state.clientId.toString(), {
-					firstName: this.state.firstName,
-					lastName: this.state.lastName,
-					emailAddress: this.state.emailAddress,
-					phone: this.state.phone
+				firstName		:	this.state.firstName,
+				lastName		:	this.state.lastName,
+				emailAddress	:	this.state.emailAddress,
+				phone			:	this.state.phone,
+				homeAddress1	:	this.state.homeAddress1,
+				homeAddress2	:	this.state.homeAddress2,
+				homeCity		:	this.state.homeCity,
+				homeState		:	this.state.homeState,
+				homeZip			:	this.state.homeZip,
+				mailAddress1	:	this.state.mailAddress1,
+				mailAddress2	:	this.state.mailAddress2,
+				mailCity		:	this.state.mailCity,
+				mailState		:	this.state.mailState,
+				mailZip			:	this.state.mailZip
 			})
 			.then((response) => {
-				console.log('response:',response);
+
 				if(response.status === 200)
 				{
-					this.toggleForm('form2')
+					let formId = event.target.id;
+					switch(formId.toString()) {
+						case 'addClientForm1':
+							this.toggleForm('form2')
+							break;
+						case 'addClientForm2':
+							this.toggleForm('form3')
+							break;
+						case 'addClientForm3':
+							this.toggleThankYou1();
+							break;
+					}
 				}
 			})
 			.catch((error) => {
@@ -194,7 +251,7 @@ class ClientData extends React.Component {
 				</p>
 
 				{ this.state.showForm1 ?
-					<form name="addClientForm" id="addClientForm" noValidate onSubmit={ this.state.clientId === '' ? this.signup : this.saveClient} >
+					<form name="addClientForm1" id="addClientForm1" noValidate onSubmit={ this.state.clientId === '' ? this.signup : this.saveClient} >
 						<Row className="sign-up-form">
 							<Col>
 								{ this.state.clientId === '' ?
@@ -284,7 +341,7 @@ class ClientData extends React.Component {
 				: null }
 
 				{ this.state.showForm2 ?
-					<form name="addClientForm2" id="addClientForm2" noValidate onSubmit={this.handleSubmit}>
+					<form name="addClientForm2" id="addClientForm2" noValidate onSubmit={this.saveClient}>
 						<Row className="sign-up-form">
 							<Col>
 								<div className="form-group">
@@ -355,7 +412,7 @@ class ClientData extends React.Component {
 				: null }
 
 				{ this.state.showForm3 ?
-					<form name="addClientForm3" id="addClientForm3" noValidate onSubmit={this.handleSubmit}>
+					<form name="addClientForm3" id="addClientForm3" noValidate onSubmit={this.saveClient}>
 						<Row className="sign-up-form">
 							<Col>
 								<div className="form-group">

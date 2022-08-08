@@ -33,11 +33,23 @@ export const ClientSchema = new Schema({
 		type: Number,
 		trim: true
 	},
-	hAddress1: {
+	homeAddress1: {
 		type: String,
 		trim: true
 	},
-	hAddress2: {
+	homeAddress2: {
+		type: String,
+		trim: true
+	},
+	homeCity: {
+		type: String,
+		trim: true
+	},
+	homeState: {
+		type: String,
+		trim: true
+	},
+	homeZip: {
 		type: String,
 		trim: true
 	},
