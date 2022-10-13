@@ -36,6 +36,7 @@ class ClientData extends React.Component {
 			mailCity: '',
 			mailState: '',
 			mailZip: '',
+			validated: false,
 			clientId: cid.toString()
 		};
 
@@ -53,20 +54,21 @@ class ClientData extends React.Component {
 					console.log('res:',res);
 					if(res.status === 200)
 					{
-						this.setState({ firstName		: res.data.user.firstName	 });
+						this.setState({ firstName			: res.data.user.firstName	 });
 						this.setState({ lastName			: res.data.user.lastName	 });
 						this.setState({ emailAddress		: res.data.user.emailAddress });
-						this.setState({ phone			: res.data.user.phone		 });
+						this.setState({ phone				: res.data.user.phone		 });
 						this.setState({ homeAddress1		: res.data.user.homeAddress1 });
 						this.setState({ homeAddress2		: res.data.user.homeAddress2 });
 						this.setState({ homeCity			: res.data.user.homeCity	 });
-						this.setState({ homeState		: res.data.user.homeState	 });
+						this.setState({ homeState			: res.data.user.homeState	 });
 						this.setState({ homeZip			: res.data.user.homeZip		 });
 						this.setState({ mailAddress1		: res.data.user.mailAddress1 });
 						this.setState({ mailAddress2		: res.data.user.mailAddress2 });
 						this.setState({ mailCity			: res.data.user.mailCity	 });
-						this.setState({ mailState		: res.data.user.mailState	 });
+						this.setState({ mailState			: res.data.user.mailState	 });
 						this.setState({ mailZip			: res.data.user.mailZip		 });
+						this.setState({ validated			: res.data.user.validated	 });
 
 						this.toggleForm('form1')
 					}
@@ -104,7 +106,7 @@ class ClientData extends React.Component {
 			this.setState({ showForm2: false });
 			this.setState({ showForm3: false });
 		}else{
-			this.setState({showThankYouMsg1: false})
+			this.setState({showThankYouMsg1: false});
 		}
 	}
 
@@ -166,36 +168,41 @@ class ClientData extends React.Component {
 	signup(event) {
 
 		event.preventDefault();
+		const form = event.currentTarget;
 
-		axios.post('http://localhost:4000/addClient', {
-				loginName:		this.state.loginName,
-				loginPass:		this.state.loginPass,
-				firstName:		this.state.firstName,
-				lastName:		this.state.lastName,
-				emailAddress:	this.state.emailAddress,
-				phone:			this.state.phone,
-				homeAddress1:	this.state.homeAddress1,
-				homeAddress2:	this.state.homeAddress2,
-				homeCity:		this.state.homeCity,
-				homeState:		this.state.homeState,
-				homeZip:		this.state.homeZip,
-				mailAddress1:	this.state.mailAddress1,
-				mailAddress2:	this.state.mailAddress2,
-				mailCity:		this.state.mailCity,
-				mailState:		this.state.mailState,
-				mailZip:		this.state.mailZip
-			})
-			.then((response) => {
-				if(response.status === 200)
-				{
-					console.log('hide');
-					this.toggleThankYou1();
-				}
-			})
-			.catch((error) => {
-				console.log('error:',error);
-			});
+		if (form.checkValidity() === false) {
+			event.stopPropagation();
+			this.setState({validated: true});
+		}else{
+			this.setState({validated: false});
 
+			axios.post('http://localhost:4000/addClient', {
+					loginName: this.state.loginName,
+					loginPass: this.state.loginPass,
+					firstName: this.state.firstName,
+					lastName: this.state.lastName,
+					emailAddress: this.state.emailAddress,
+					phone: this.state.phone,
+					homeAddress1: this.state.homeAddress1,
+					homeAddress2: this.state.homeAddress2,
+					homeCity: this.state.homeCity,
+					homeState: this.state.homeState,
+					homeZip: this.state.homeZip,
+					mailAddress1: this.state.mailAddress1,
+					mailAddress2: this.state.mailAddress2,
+					mailCity: this.state.mailCity,
+					mailState: this.state.mailState,
+					mailZip: this.state.mailZip
+				})
+				.then((response) => {
+					if (response.status === 200) {
+						this.toggleThankYou1();
+					}
+				})
+				.catch((error) => {
+					console.log('error:', error);
+				});
+		}
 	}
 
 	saveClient(event) {
@@ -245,87 +252,118 @@ class ClientData extends React.Component {
 	render() {
 		return (
 			<>
-				<p className="main-text">
-					Excited to have you on board!!!<br />
-					Please fill out the following to get started!<br />
-				</p>
-
 				{ this.state.showForm1 ?
-					<form name="addClientForm1" id="addClientForm1" noValidate onSubmit={ this.state.clientId === '' ? this.signup : this.saveClient} >
+					<Form name="addClientForm1" id="addClientForm1" noValidate validated={this.state.validated} onSubmit={ this.state.clientId === '' ? this.signup : this.saveClient} >
+						<Row className="sign-up-form">
+							<Col>
+								<p className="main-text">
+									Excited to have you on board!!!<br />
+									Please fill out the following to get started!<br />
+								</p>
+							</Col>
+						</Row>
 						<Row className="sign-up-form">
 							<Col>
 								{ this.state.clientId === '' ?
-								<div className="form-group">
-									<input type="text"
-										   className="form-control"
-										   placeholder="Your Login Name *"
-										   id="loginName"
-										   required
-										   value={this.state.loginName}
-										   onChange={this.handleChange}
-										   data-validation-required-message="Please enter your login name." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
+									<Form.Group as={Col} md="12" id="validationUsername">
+										<Form.Label>Username *</Form.Label>
+										<InputGroup hasValidation>
+											<InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
+											<Form.Control
+												type="text"
+												placeholder="Username *"
+												aria-describedby="inputGroupPrepend"
+												required
+												id="loginName"
+												value={this.state.loginName}
+												onChange={this.handleChange}
+											/>
+											<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+											<Form.Control.Feedback type="invalid">
+												Please enter your username.
+											</Form.Control.Feedback>
+										</InputGroup>
+									</Form.Group>
 								: null }
-								<div className="form-group">
-									<input type="text"
-										   className="form-control"
-										   placeholder="Your First Name *"
-										   id="firstName"
-										   required
-										   value={this.state.firstName}
-										   onChange={this.handleChange}
-										   data-validation-required-message="Please enter your first name." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
-								<div className="form-group">
-									<input type="tel"
-										   className="form-control"
-										   placeholder="Your Phone *"
-										   id="phone"
-										   required
-										   value={this.state.phone}
-										   onChange={this.handleChange}
-										   data-validation-required-message="Please enter your phone number." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
+								<Form.Group as={Col} md="12" id="validationFirstname">
+									<Form.Label>First name *</Form.Label>
+									<Form.Control
+										required
+										type="text"
+										placeholder="First Name *"
+										value={this.state.firstName}
+										onChange={this.handleChange}
+										id="firstName"
+									/>
+									<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+									<Form.Control.Feedback type="invalid">
+										Please enter your first name.
+									</Form.Control.Feedback>
+								</Form.Group>
+								<Form.Group as={Col} md="12" id="validationPhone">
+									<Form.Label>Phone number *</Form.Label>
+									<Form.Control
+										required
+										type="text"
+										placeholder="Phone *"
+										value={this.state.phone}
+										onChange={this.handleChange}
+										id="phone"
+									/>
+									<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+									<Form.Control.Feedback type="invalid">
+										Please enter your phone number.
+									</Form.Control.Feedback>
+								</Form.Group>
 							</Col>
 							<Col>
 								{ this.state.clientId === '' ?
-								<div className="form-group">
-									<input type="text"
-										className="form-control"
-										placeholder="Your Login PassCode *"
-										id="loginPass"
-										required
-										value={this.state.loginPass}
-										onChange={this.handleChange}
-										data-validation-required-message="Please enter your pass code." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
+									<Form.Group as={Col} md="12" id="validationPasscode">
+										<Form.Label>Passcode *</Form.Label>
+										<Form.Control
+											required
+											type="text"
+											placeholder="Passcode *"
+											value={this.state.loginPass}
+											onChange={this.handleChange}
+											id="loginPass"
+										/>
+										<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+										<Form.Control.Feedback type="invalid">
+											Please enter your pass code.
+										</Form.Control.Feedback>
+									</Form.Group>
 								: null }
-								<div className="form-group">
-									<input type="text"
-										className="form-control"
-										placeholder="Your Last Name *"
-										id="lastName"
+								<Form.Group as={Col} md="12" id="validationLastname">
+									<Form.Label>Last name *</Form.Label>
+									<Form.Control
 										required
+										type="text"
+										placeholder="Last Name *"
 										value={this.state.lastName}
 										onChange={this.handleChange}
-										data-validation-required-message="Please enter your last name." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
-								<div className="form-group">
-									<input type="email"
-										   className="form-control"
-										   placeholder="Your Email Address *"
-										   id="emailAddress"
-										   required
-										   value={this.state.emailAddress}
-										   onChange={this.handleChange}
-										   data-validation-required-message="Please enter your phone number." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
+										id="lastName"
+									/>
+									<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+									<Form.Control.Feedback type="invalid">
+										Please enter your last name.
+									</Form.Control.Feedback>
+								</Form.Group>
+								<Form.Group as={Col} md="12" id="validationLastname">
+									<Form.Label>Email Address *</Form.Label>
+									<Form.Control
+										required
+										type="email"
+										placeholder=" Email Address *"
+										value={this.state.emailAddress}
+										onChange={this.handleChange}
+										id="emailAddress"
+									/>
+									<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+									<Form.Control.Feedback type="invalid">
+										Please enter your email address.
+									</Form.Control.Feedback>
+								</Form.Group>
 							</Col>
 							<div className="clearfix">&nbsp;</div>
 							<div className="col-lg-12 text-center">
@@ -337,11 +375,19 @@ class ClientData extends React.Component {
 
 							</div>
 						</Row>
-					</form>
+					</Form>
 				: null }
 
 				{ this.state.showForm2 ?
-					<form name="addClientForm2" id="addClientForm2" noValidate onSubmit={this.saveClient}>
+					<Form name="addClientForm2" id="addClientForm2" noValidate onSubmit={this.saveClient}>
+						<Row className="sign-up-form">
+							<Col>
+								<p className="main-text">
+									Excited to have you on board!!!<br />
+									Please fill out the following to get started!<br />
+								</p>
+							</Col>
+						</Row>
 						<Row className="sign-up-form">
 							<Col>
 								<div className="form-group">
@@ -408,11 +454,19 @@ class ClientData extends React.Component {
 								<button type="submit" className="btn btn-primary">Save</button>
 							</div>
 						</Row>
-					</form>
+					</Form>
 				: null }
 
 				{ this.state.showForm3 ?
-					<form name="addClientForm3" id="addClientForm3" noValidate onSubmit={this.saveClient}>
+					<Form name="addClientForm3" id="addClientForm3" noValidate onSubmit={this.saveClient}>
+						<Row className="sign-up-form">
+							<Col>
+								<p className="main-text">
+									Excited to have you on board!!!<br />
+									Please fill out the following to get started!<br />
+								</p>
+							</Col>
+						</Row>
 						<Row className="sign-up-form">
 							<Col>
 								<div className="form-group">
@@ -479,11 +533,11 @@ class ClientData extends React.Component {
 								<button type="submit" className="btn btn-primary">Save</button>
 							</div>
 						</Row>
-					</form>
-					: null }
+					</Form>
+				: null }
 
 				{ this.state.showThankYouMsg1 ?
-					<div name="thankyoumsg" id="thankyoumsg" className="sign-up-form">
+					<div id="thankyoumsg" className="sign-up-form thank-you">
 						<h5>Thank you for you interest</h5>
 						<p>
 							You will receive more info soon.

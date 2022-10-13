@@ -10,6 +10,7 @@ const cl = new MongoClient( config.mongodbUri );
 
 export const addNewClient = (req, res) => {
 
+	Client.init();
 	let newClient = new Client(req.body);
 	async function run() {
 		try {

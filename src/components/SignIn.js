@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import {Col, Row, Alert} from 'react-bootstrap';
+import {Col, Row, Alert, Form, InputGroup} from 'react-bootstrap';
 import { Navigate } from "react-router-dom"
 
 class SignIn extends React.Component {
@@ -88,12 +88,18 @@ class SignIn extends React.Component {
 						<Row className="sign-up-form sign-in-alert ">
 							<Col md={12}>
 								<div className="form-group">
-									<input type="text"
-										   className="form-control"
-										   placeholder="Your Login Name *"
-										   id="loginName"
-										   required
-										   data-validation-required-message="Please enter your login name." />
+									<InputGroup className="mb-3">
+										<InputGroup.Text id="basic-addon3">
+											Your Login Name *
+										</InputGroup.Text>
+										<Form.Control id="loginName" aria-describedby="basic-addon3" required />
+									</InputGroup>
+									{/*<input type="text"*/}
+									{/*	   className="form-control"*/}
+									{/*	   placeholder="Your Login Name *"*/}
+									{/*	   id="loginName"*/}
+									{/*	   required*/}
+									{/*	   data-validation-required-message="Please enter your login name." />*/}
 									<p className="help-block text-danger">&nbsp;</p>
 								</div>
 								<div className="form-group">

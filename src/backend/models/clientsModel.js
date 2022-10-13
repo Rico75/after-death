@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 const Schema = mongoose.Schema;
 
 export const ClientSchema = new Schema({
-	_id: Schema.Types.ObjectId,
 	loginName: {
 		type: String,
 		required: true,
@@ -30,7 +29,7 @@ export const ClientSchema = new Schema({
 		trim: true
 	},
 	phone: {
-		type: Number,
+		type: String,
 		trim: true
 	},
 	homeAddress1: {
