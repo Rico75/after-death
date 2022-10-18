@@ -85,14 +85,19 @@ export const UpdateClient = (req, res) => {
 	let cid = req.params.cid.toString();
 	let ocid = new mongoObjectId(cid);
 
-	let updClient = new Client(req.body);
+	let updClient = req.body;
+
 	async function run() {
 		try {
 			await cl.connect();
 			const db = cl.db('after-death');
 			const col = db.collection('clients');
+			const filter = { "_id": ocid };
+			const updateDoc = { $set: updClient };
+			const options = { upsert: false };
 
-			col.updateOne({_id : ocid},{$set: updClient});
+			col.updateOne(filter, updateDoc, options);
+
 			res.send({success: true});
 
 		} catch (err) {

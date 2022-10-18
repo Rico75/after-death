@@ -2,6 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import {Col, Row, Alert, Form, InputGroup} from 'react-bootstrap';
 import { Navigate } from "react-router-dom"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 class SignIn extends React.Component {
 	constructor(props) {
@@ -10,6 +12,8 @@ class SignIn extends React.Component {
 			loginName: '',
 			loginPass: '',
 			showError: false,
+			showLoginPass: false,
+			validated: false,
 			navTo: false,
 			clientId: ''
 		};
@@ -22,31 +26,35 @@ class SignIn extends React.Component {
 	handleSubmit(event) {
 
 		event.preventDefault();
+		const form = event.currentTarget;
 
-		axios.post('http://localhost:4000/loginClient', {
-			loginName: event.target.loginName.value,
-			loginPass: event.target.loginPass.value
-		})
-		.then((res) => {
-			console.log('response:',res);
-			if(res.status === 200 && res.data.success === true)
-			{
-				console.log('success');
-				this.setError(false);
-				this.setNavigation({navTo: true});
-				this.setState({clientId: res.data.id})
-			}
-			else
-			{
-				console.log('error');
-				this.setError(true);
-			}
-		})
-		.catch((error) => {
-			console.log('error:',error);
-			this.setError(true);
-		});
+		if (form.checkValidity() === false) {
+			event.stopPropagation();
+			this.setState({validated: true});
+		}else {
+			this.setState({validated: false});
 
+			axios.post('http://localhost:4000/loginClient', {
+					loginName: event.target.loginName.value,
+					loginPass: event.target.loginPass.value
+				})
+				.then((res) => {
+					console.log('response:', res);
+					if (res.status === 200 && res.data.success === true) {
+						console.log('success');
+						this.setError(false);
+						this.setNavigation({navTo: true});
+						this.setState({clientId: res.data.id})
+					} else {
+						console.log('error');
+						this.setError(true);
+					}
+				})
+				.catch((error) => {
+					console.log('error:', error);
+					this.setError(true);
+				});
+		}
 	}
 
 	setError = (bool) => {
@@ -65,6 +73,14 @@ class SignIn extends React.Component {
 		}
 	}
 
+	toggleEye = () => {
+		if(this.state.showLoginPass === false) {
+			this.setState({ showLoginPass: true });
+		}else{
+			this.setState({ showLoginPass: false });
+		}
+	}
+
 	Child = () => {
 		return (this.state.clientId);
 	}
@@ -72,11 +88,6 @@ class SignIn extends React.Component {
 	render() {
 		return (
 			<>
-				<p className="main-text">
-					Welcome Back!!!<br />
-					Please sign in to continue!<br />
-				</p>
-
 				{ this.state.navTo
 					?
 					<Navigate to={{
@@ -84,33 +95,61 @@ class SignIn extends React.Component {
 						state: {clientId:this.state.clientId}
 					}} />
 					:
-					<form name="signInForm" id="signInForm" noValidate onSubmit={this.handleSubmit}>
+					<Form name="signInForm" id="signInForm" noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
 						<Row className="sign-up-form sign-in-alert ">
-							<Col md={12}>
-								<div className="form-group">
-									<InputGroup className="mb-3">
-										<InputGroup.Text id="basic-addon3">
-											Your Login Name *
-										</InputGroup.Text>
-										<Form.Control id="loginName" aria-describedby="basic-addon3" required />
+							<Col>
+								<p className="main-text">
+									Welcome Back!!!<br />
+									Please sign in to continue!<br />
+								</p>
+							</Col>
+						</Row>
+						<Row className="sign-up-form sign-in-alert ">
+							<Col>
+								<Form.Group as={Col} md="12" id="validationUsername">
+									<Form.Label>Username *</Form.Label>
+									<InputGroup hasValidation>
+										<InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
+										<Form.Control
+											type="text"
+											placeholder="Username *"
+											aria-describedby="inputGroupPrepend"
+											required
+											id="loginName"
+										/>
+										<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+										<Form.Control.Feedback type="invalid">
+											Please enter your username.
+										</Form.Control.Feedback>
 									</InputGroup>
-									{/*<input type="text"*/}
-									{/*	   className="form-control"*/}
-									{/*	   placeholder="Your Login Name *"*/}
-									{/*	   id="loginName"*/}
-									{/*	   required*/}
-									{/*	   data-validation-required-message="Please enter your login name." />*/}
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
-								<div className="form-group">
-									<input type="text"
-										   className="form-control"
-										   placeholder="Your Login PassCode *"
-										   id="loginPass"
-										   required
-										   data-validation-required-message="Please enter your pass code." />
-									<p className="help-block text-danger">&nbsp;</p>
-								</div>
+								</Form.Group>
+
+								<Form.Group as={Col} md="12" id="validationPasscode">
+									<Form.Label>Passcode *</Form.Label>
+									<InputGroup hasValidation>
+										<Form.Control
+											required
+											type={this.state.showLoginPass ? "text" : "password"}
+											placeholder="Passcode *"
+											id="loginPass"
+											aria-describedby="inputGroupAppend"
+										/>
+										<InputGroup.Text id="inputGroupAppend">
+											{
+												this.state.showLoginPass === true
+													?
+													<FontAwesomeIcon icon={faEye} onClick={this.toggleEye} />
+													:
+													<FontAwesomeIcon icon={faEyeSlash} onClick={this.toggleEye} />
+											}
+										</InputGroup.Text>
+										<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+										<Form.Control.Feedback type="invalid">
+											Please enter your pass code.
+										</Form.Control.Feedback>
+									</InputGroup>
+								</Form.Group>
+
 								{ this.state.showError ?
 									<Alert variant="danger" onClose={() => this.setError(false)} dismissible>
 										<Alert.Heading>Oh snap! There is a mismatch!</Alert.Heading>
@@ -129,7 +168,7 @@ class SignIn extends React.Component {
 								<button type="submit" className="btn btn-primary">Sign me in!!</button>
 							</div>
 						</Row>
-					</form>
+					</Form>
 				}
 			</>
 		);

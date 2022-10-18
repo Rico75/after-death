@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import {Col, Row} from 'react-bootstrap';
+import {Col, Row, Form, InputGroup} from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import SpinnerButton from "./Spinner";
 
 class ClientData extends React.Component {
 	constructor(props) {
@@ -37,6 +40,8 @@ class ClientData extends React.Component {
 			mailState: '',
 			mailZip: '',
 			validated: false,
+			showLoginPass: false,
+			activateSpinner: false,
 			clientId: cid.toString()
 		};
 
@@ -44,6 +49,7 @@ class ClientData extends React.Component {
 		this.signup = this.signup.bind(this);
 		this.saveClient = this.saveClient.bind(this);
 		this.toggleForm = this.toggleForm.bind(this);
+		this.formatPhone = this.formatPhone.bind(this);
 	}
 
 	componentDidMount() {
@@ -110,7 +116,7 @@ class ClientData extends React.Component {
 		}
 	}
 
-	handleChange(event) {
+	handleChange = (event) => {
 		switch (event.target.id) {
 			case 'loginName':
 				this.setState({ loginName: event.target.value });
@@ -165,7 +171,7 @@ class ClientData extends React.Component {
 		}
 	}
 
-	signup(event) {
+	signup = (event) => {
 
 		event.preventDefault();
 		const form = event.currentTarget;
@@ -175,6 +181,7 @@ class ClientData extends React.Component {
 			this.setState({validated: true});
 		}else{
 			this.setState({validated: false});
+			this.setState({activateSpinner: true});
 
 			axios.post('http://localhost:4000/addClient', {
 					loginName: this.state.loginName,
@@ -197,6 +204,7 @@ class ClientData extends React.Component {
 				.then((response) => {
 					if (response.status === 200) {
 						this.toggleThankYou1();
+						this.setState({activateSpinner: false});
 					}
 				})
 				.catch((error) => {
@@ -205,7 +213,7 @@ class ClientData extends React.Component {
 		}
 	}
 
-	saveClient(event) {
+	saveClient = (event) => {
 
 		event.preventDefault();
 
@@ -247,6 +255,42 @@ class ClientData extends React.Component {
 				console.log('error:',error);
 			});
 
+	}
+
+	formatPhone = (phoneNum) => {
+		// if input value is falsy eg if the user deletes the input, then just return
+		if (!phoneNum) return phoneNum;
+
+		// clean the input for any non-digit values.
+		const phoneNumber = phoneNum.replace(/[^\d]/g, "");
+
+		// phoneNumberLength is used to know when to apply our formatting for the phone number
+		const phoneNumberLength = phoneNumber.length;
+
+		// we need to return the value with no formatting if its less then four digits
+		// this is to avoid weird behavior that occurs if you  format the area code to early
+		if (phoneNumberLength < 4) return phoneNumber;
+
+		// if phoneNumberLength is greater than 4 and less the 7 we start to return
+		// the formatted number
+		if (phoneNumberLength < 7) {
+			return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+		}
+
+		// finally, if the phoneNumberLength is greater then seven, we add the last
+		// bit of formatting and return it.
+		return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+			3,
+			6
+		)}-${phoneNumber.slice(6, 10)}`;
+	}
+
+	toggleEye = () => {
+		if(this.state.showLoginPass === false) {
+			this.setState({ showLoginPass: true });
+		}else{
+			this.setState({ showLoginPass: false });
+		}
 	}
 
 	render() {
@@ -306,7 +350,7 @@ class ClientData extends React.Component {
 										required
 										type="text"
 										placeholder="Phone *"
-										value={this.state.phone}
+										value={this.formatPhone(this.state.phone)}
 										onChange={this.handleChange}
 										id="phone"
 									/>
@@ -320,18 +364,29 @@ class ClientData extends React.Component {
 								{ this.state.clientId === '' ?
 									<Form.Group as={Col} md="12" id="validationPasscode">
 										<Form.Label>Passcode *</Form.Label>
-										<Form.Control
-											required
-											type="text"
-											placeholder="Passcode *"
-											value={this.state.loginPass}
-											onChange={this.handleChange}
-											id="loginPass"
-										/>
-										<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-										<Form.Control.Feedback type="invalid">
-											Please enter your pass code.
-										</Form.Control.Feedback>
+										<InputGroup hasValidation>
+											<Form.Control
+												required
+												type={this.state.showLoginPass ? "text" : "password"}
+												placeholder="Passcode *"
+												value={this.state.loginPass}
+												onChange={this.handleChange}
+												id="loginPass"
+											/>
+											<InputGroup.Text id="inputGroupAppend">
+												{
+													this.state.showLoginPass === true
+													?
+													<FontAwesomeIcon icon={faEye} onClick={this.toggleEye} />
+													:
+													<FontAwesomeIcon icon={faEyeSlash} onClick={this.toggleEye} />
+												}
+											</InputGroup.Text>
+											<Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+											<Form.Control.Feedback type="invalid">
+												Please enter your pass code.
+											</Form.Control.Feedback>
+										</InputGroup>
 									</Form.Group>
 								: null }
 								<Form.Group as={Col} md="12" id="validationLastname">
@@ -370,7 +425,9 @@ class ClientData extends React.Component {
 								<div id="success">&nbsp;</div>
 
 								{ this.state.clientId === '' ?
-									<button type="submit" className="btn btn-primary">Sign me up!!</button>
+										this.state.activateSpinner === false ?
+											<button type="submit" className="btn btn-primary"><div>Sign me up!!</div></button>
+										:	<SpinnerButton></SpinnerButton>
 								:	<button type="submit" className="btn btn-primary">Save</button> }
 
 							</div>
